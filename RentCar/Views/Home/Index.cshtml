@@ -154,12 +154,50 @@
         padding: 50px;
         color: #777;
     }
+    /* TAMBAHAN: Style Pagination */
+    .pagination-container {
+        margin-top: 40px;
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-page {
+        padding: 10px 15px;
+        border: 1px solid #ddd;
+        background-color: white;
+        color: #333;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: 0.3s;
+    }
+
+        .btn-page:hover {
+            background-color: #f0f0f0;
+            border-color: #ccc;
+        }
+
+        .btn-page.active {
+            background-color: #6a1b9a; /* Warna tema ungu */
+            color: white;
+            border-color: #6a1b9a;
+        }
+
+        .btn-page.disabled {
+            color: #ccc;
+            pointer-events: none;
+            background-color: #f9f9f9;
+        }
 </style>
 
 <div class="hero-section">
     <h1 class="hero-title">Selamat Datang di Rental Mobil Kami</h1>
 </div>
-
+@if (ViewBag.ErrorMessage != null)
+{
+    <div style="background-color: #f8d7da; color: #721c24; padding: 15px; margin-bottom: 20px; border-radius: 5px; border: 1px solid #f5c6cb; text-align: center;">
+        <strong>Perhatian!</strong> @ViewBag.ErrorMessage
+    </div>
+}
 <div class="search-container">
     <form asp-controller="Home" asp-action="Index" method="get" class="search-form">
 
@@ -192,7 +230,24 @@
                 }
             </select>
         </div>
-        
+        <div class="form-group">
+            <label>Urutkan Harga</label>
+            <select name="sortOrder" class="form-control">
+                @{
+                    var sort = ViewBag.SortOrder as string;
+                }
+                @if (sort == "price_desc")
+                {
+                    <option value="price_asc">Termurah ke Termahal</option>
+                    <option value="price_desc" selected>Termahal ke Termurah</option>
+                }
+                else
+                {
+                    <option value="price_asc" selected>Termurah ke Termahal</option>
+                    <option value="price_desc">Termahal ke Termurah</option>
+                }
+            </select>
+        </div>
 
         <div class="form-group" style="flex: 0 0 auto;">
             <button type="submit" class="btn-search">Cari</button>
@@ -235,5 +290,48 @@
             <h3>Belum ada mobil yang tersedia untuk kriteria pencarian ini.</h3>
             <p>Silakan coba tanggal lain atau filter tahun yang berbeda.</p>
         </div>
-    } 
+    }
+    @if (ViewBag.TotalPages >= 0)
+    {
+        <div class="pagination-container">
+            @{
+                var prevDisabled = ViewBag.CurrentPage == 1 ? "disabled" : "";
+                var nextDisabled = ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "";
+
+                // Kita harus mengoper parameter filter lain (tanggal/tahun) supaya pas klik next, filternya gak hilang
+                var routeParams = new Dictionary<string, string>
+                {
+                { "pickupDate", ViewBag.PickupDate?.ToString("yyyy-MM-dd") },
+                { "returnDate", ViewBag.ReturnDate?.ToString("yyyy-MM-dd") },
+                { "yearFilter", ViewBag.YearFilter?.ToString() },
+                { "sortOrder", ViewBag.SortOrder }
+                };
+            }
+
+            <a asp-action="Index"
+               asp-all-route-data="routeParams"
+               asp-route-page="@(ViewBag.CurrentPage - 1)"
+               class="btn-page @prevDisabled">
+                &laquo; Prev
+            </a>
+
+            @for (int i = 1; i <= ViewBag.TotalPages; i++)
+            {
+                var activeClass = i == ViewBag.CurrentPage ? "active" : "";
+                <a asp-action="Index"
+                   asp-all-route-data="routeParams"
+                   asp-route-page="@i"
+                   class="btn-page @activeClass">
+                    @i
+                </a>
+            }
+
+            <a asp-action="Index"
+               asp-all-route-data="routeParams"
+               asp-route-page="@(ViewBag.CurrentPage + 1)"
+               class="btn-page @nextDisabled">
+                Next &raquo;
+            </a>
+        </div>
+    }
 </div>
