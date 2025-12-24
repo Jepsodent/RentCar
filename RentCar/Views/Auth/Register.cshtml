@@ -1,0 +1,103 @@
+﻿@model RentCar.ViewModel.Auth.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Registrasi Akun";
+}
+
+<style>
+    .auth-container {
+        width: 100%;
+        max-width: 500px;
+        margin: 50px auto;
+        padding: 30px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        font-family: Arial, sans-serif;
+    }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+    .form-group input, .form-group textarea {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        box-sizing: border-box; 
+    }
+    .btn-submit {
+        width: 100%;
+        padding: 12px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+    .btn-submit:hover { background-color: #45a049; }
+    .text-danger { color: red; font-size: 0.875em; }
+    .link-login { display: block; text-align: center; margin-top: 15px; }
+</style>
+
+<div class="auth-container">
+    <h2 style="text-align:center;">Registrasi Akun</h2>
+
+    <form asp-action="Register" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div> 
+
+        <div class="form-group">
+            <label asp-for="Name">Nama Lengkap</label>
+            <input asp-for="Name" placeholder="Masukkan nama lengkap" required />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Email">Email</label>
+            <input asp-for="Email" type="email" placeholder="contoh@email.com" required />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Password">Password</label>
+            <input asp-for="Password" type="password" required />
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="ConfirmPassword">Konfirmasi Password</label>
+            <input asp-for="ConfirmPassword" type="password" required />
+            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+        </div> 
+        
+
+        <div class="form-group">
+            <label asp-for="PhoneNumber">Nomor Telepon</label>
+            <input asp-for="PhoneNumber" placeholder="08xxxxx" required />
+            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Address">Alamat</label>
+            <textarea asp-for="Address" rows="3" placeholder="Alamat lengkap" required></textarea>
+            <span asp-validation-for="Address" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="DriverLicenseNumber">Nomor SIM</label>
+            <input asp-for="DriverLicenseNumber" placeholder="Nomor SIM" required />
+            <span asp-validation-for="DriverLicenseNumber" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn-submit">Daftar Sekarang</button>
+    </form>
+
+    <div class="link-login">
+        Sudah punya akun? <a asp-controller="Auth" asp-action="Login">Login disini</a>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
