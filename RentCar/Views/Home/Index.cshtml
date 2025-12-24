@@ -1,8 +1,239 @@
-﻿@{
+﻿@model IEnumerable<RentCar.Models.MsCar>
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<style>
+    /* Hero Title */
+    .hero-section {
+        text-align: center;
+        margin-bottom: 30px;
+        padding: 20px;
+    }
+
+    .hero-title {
+        color: #444;
+        font-size: 2.5rem;
+        margin-bottom: 10px;
+    }
+
+    .search-container {
+        background-color: #f0f4f8; 
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        margin-bottom: 40px;
+        border: 1px solid #dceefc;
+    }
+
+    .search-form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        align-items: flex-end;
+        justify-content: center;
+    }
+
+    .form-group {
+        flex: 1;
+        min-width: 200px;
+    }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+        box-sizing: border-box; 
+    }
+
+    .btn-search {
+        background-color: #ff6b6b; 
+        color: white;
+        padding: 11px 30px;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background 0.3s;
+        height: 42px; 
+    }
+
+        .btn-search:hover {
+            background-color: #e55a5a;
+        }
+
+    /* Car Grid Styling */
+    .car-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+        gap: 30px;
+    }
+
+    /* Card Styling */
+    .car-card {
+        background: white;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        transition: transform 0.2s;
+        border: 1px solid #eee;
+        display: flex;
+        flex-direction: column;
+    }
+
+        .car-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+        }
+
+    .car-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover; 
+        background-color: #ddd;
+    }
+
+    .card-body {
+        padding: 20px;
+        text-align: center;
+        flex-grow: 1;
+        background-color: #f9fbfd; 
+    }
+
+    .car-title {
+        font-size: 1.25rem;
+        font-weight: bold;
+        margin: 10px 0 5px;
+        color: #333;
+    }
+
+    .car-info {
+        color: #666;
+        margin-bottom: 15px;
+        font-size: 0.9rem;
+    }
+
+    .car-price {
+        color: #2c3e50;
+        font-weight: bold;
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+    }
+
+    .btn-rent {
+        display: inline-block;
+        width: 100%;
+        padding: 10px 0;
+        background-color: #fceabb;
+        background-image: linear-gradient(to bottom, #fceabb 0%, #f8b500 100%); 
+        color: #fff;
+        text-decoration: none;
+        font-weight: bold;
+        border-radius: 5px;
+        text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+    }
+
+        .btn-rent:hover {
+            opacity: 0.9;
+        }
+
+    .empty-state {
+        text-align: center;
+        grid-column: 1 / -1; 
+        padding: 50px;
+        color: #777;
+    }
+</style>
+
+<div class="hero-section">
+    <h1 class="hero-title">Selamat Datang di Rental Mobil Kami</h1>
+</div>
+
+<div class="search-container">
+    <form asp-controller="Home" asp-action="Index" method="get" class="search-form">
+
+        <div class="form-group">
+            <label>Pickup Date:</label>
+            <input type="date" name="pickupDate" class="form-control"
+                   value="@ViewBag.PickupDate?.ToString("yyyy-MM-dd")" />
+        </div>
+
+        <div class="form-group">
+            <label>Return Date:</label>
+            <input type="date" name="returnDate" class="form-control"
+                   value="@ViewBag.ReturnDate?.ToString("yyyy-MM-dd")" />
+        </div>
+
+        <div class="form-group">
+            <label>Filter Tahun Pembuatan</label>
+            <select name="yearFilter" class="form-control">
+                <option value="">Semua Tahun</option>
+                @for (int i = 2018; i <= 2026; i++)
+                {
+                    if (ViewBag.YearFilter == i)
+                    {
+                        <option value="@i" selected>@i</option>
+                    }
+                    else
+                    {
+                        <option value="@i">@i</option>
+                    }
+                }
+            </select>
+        </div>
+        
+
+        <div class="form-group" style="flex: 0 0 auto;">
+            <button type="submit" class="btn-search">Cari</button>
+        </div>
+    </form>
+</div>
+<div class="car-grid">
+    @if (Model != null && Model.Any())
+    {
+        @foreach (var car in Model)
+        {
+            <div class="car-card">
+                @{
+                    var imageLink = car.CarImages.FirstOrDefault()?.ImageLink
+                    ?? "https://placehold.co/600x400?text=No+Image";
+                }
+                <img src="@imageLink" class="car-image" alt="@car.Name">
+
+                <div class="card-body">
+                    <div class="car-title">@car.Name</div>
+
+                    <div class="car-info">
+                        @car.Year • @car.Transmission • @car.NumberOfCarSeats Seat
+                    </div>
+
+                    <div class="car-price">
+                        Harga: Rp. @car.PricePerDay.ToString("N0") / hari
+                    </div>
+
+                    <a asp-controller="Rental" asp-action="Book" asp-route-id="@car.CarId" class="btn-rent">
+                        Sewa Sekarang
+                    </a>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="empty-state">
+            <h3>Belum ada mobil yang tersedia untuk kriteria pencarian ini.</h3>
+            <p>Silakan coba tanggal lain atau filter tahun yang berbeda.</p>
+        </div>
+    } 
 </div>

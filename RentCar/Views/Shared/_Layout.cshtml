@@ -4,45 +4,174 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - RentCar</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/RentCar.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: #ffffff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between; 
+            align-items: center;
+            padding: 15px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .navbar-brand {
+            font-size: 24px;
+            font-weight: bold;
+            color: #6a1b9a; 
+            text-decoration: none;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            gap: 20px; 
+            align-items: center;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: #555;
+            font-weight: 500;
+            font-size: 16px;
+            transition: color 0.3s;
+        }
+
+            .nav-link:hover {
+                color: #6a1b9a;
+            }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background-color: #6a1b9a;
+            color: white;
+        }
+
+            .btn-primary:hover {
+                background-color: #4a148c;
+            }
+
+        .btn-outline {
+            border: 1px solid #6a1b9a;
+            color: #6a1b9a;
+            background: transparent;
+        }
+
+            .btn-outline:hover {
+                background-color: #f3e5f5;
+            }
+
+        .btn-link {
+            background: none;
+            border: none;
+            color: #d9534f; 
+            padding: 0;
+            font: inherit;
+            cursor: pointer;
+        }
+
+        /* FOOTER */
+        footer {
+            background-color: #fff;
+            border-top: 1px solid #ddd;
+            padding: 20px 0;
+            text-align: center;
+            color: #777;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">RentCar</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
+        <nav class="navbar">
+            <a class="navbar-brand" asp-controller="Home" asp-action="Index">RentCar</a>
+
+            <ul class="nav-menu">
+                <li><a class="nav-link" asp-controller="Home" asp-action="Index">Home</a></li>
+
+                @if (User.Identity!.IsAuthenticated)
+                {
+                    <li><a class="nav-link" asp-controller="Transaction" asp-action="History">Riwayat Penyewaan</a></li>
+                }
+
+                <li><a class="nav-link" asp-controller="Home" asp-action="Privacy">Kontak Kami</a></li>
+            </ul>
+
+            <ul class="nav-menu">
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <li>
+                        <span style="font-weight:bold; color:#333;">Hai, @User.Identity.Name</span>
+                    </li>
+                    <li>
+                        <form asp-controller="Auth" asp-action="Logout" method="post" style="display:inline;">
+                            <button type="submit" class="nav-link btn-link">Logout</button>
+                        </form>
+                    </li>
+                }
+                else
+                {
+                    <li>
+                        <a class="btn btn-outline" asp-controller="Auth" asp-action="Login">Login</a>
+                    </li>
+                    <li>
+                        <a class="btn btn-primary" asp-controller="Auth" asp-action="Register">Register</a>
+                    </li>
+                }
+            </ul>
         </nav>
     </header>
+
     <div class="container">
-        <main role="main" class="pb-3">
+        <main role="main">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+    <footer>
         <div class="container">
-            &copy; 2025 - RentCar - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2026 - RentCar App. Semua Hak Dilindungi.
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
