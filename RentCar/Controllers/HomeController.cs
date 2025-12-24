@@ -19,6 +19,10 @@ namespace RentCar.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(DateTime? pickupDate, DateTime? returnDate, int? yearFilter)
         {
+            if (!pickupDate.HasValue && !returnDate.HasValue && !yearFilter.HasValue)
+            {
+                return View(new List<MsCar>()); 
+            }
 
             if (pickupDate.HasValue && returnDate.HasValue)
             {
