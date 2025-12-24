@@ -34,7 +34,7 @@ namespace RentCar.Models
         [ForeignKey(nameof(CarId))]
         public MsCar Car { get; set; } = null!;
 
-        // Navigation
-        public ICollection<LtPayment> Payment { get; set; } = new List<LtPayment>();
+        // Navigation (1 to 1)
+        public LtPayment? Payment { get; set; }
     }
 }
