@@ -17,12 +17,14 @@ namespace RentCar.Controllers
             _context = context;
         }
         [HttpGet]
-        public async Task<IActionResult> Index(DateTime? pickupDate, DateTime? returnDate, int? yearFilter)
+        public async Task<IActionResult> Index(DateTime? pickupDate, DateTime? returnDate, int? yearFilter, string sortOrder, int page = 1)
         {
+            
             if (!pickupDate.HasValue && !returnDate.HasValue && !yearFilter.HasValue)
             {
                 return View(new List<MsCar>()); 
             }
+
 
             if (pickupDate.HasValue && returnDate.HasValue)
             {
@@ -30,8 +32,7 @@ namespace RentCar.Controllers
                 {
                     ViewBag.ErrorMessage = "Tanggal pengembalian tidak boleh kurang dari tanggal pengambilan!";
 
-                    var allCars = await _context.MsCars.Include(c => c.CarImages).ToListAsync();
-                    return View(allCars);
+                    return View(new List<MsCar>());
                 }
             }
 
@@ -53,12 +54,29 @@ namespace RentCar.Controllers
             {
                 carsQuery = carsQuery.Where(c => c.Year == yearFilter.Value);
             }
+            switch (sortOrder)
+            {
+                case "price_desc": // Termahal -> Termurah
+                    carsQuery = carsQuery.OrderByDescending(c => c.PricePerDay);
+                    break;
+                case "price_asc": // Termurah -> Termahal
+                default:
+                    carsQuery = carsQuery.OrderBy(c => c.PricePerDay);
+                    break;
+            }
+            int pageSize = 3;
 
-            var carList = await carsQuery.ToListAsync();
+            int totalItems = await carsQuery.CountAsync();
+            Console.WriteLine("Total Items: " + totalItems);
+            int totalPages = (int)Math.Ceiling(totalItems / (double)pageSize);
+
+            var carList = await carsQuery.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
             ViewBag.PickupDate = pickupDate;
             ViewBag.ReturnDate = returnDate;
             ViewBag.YearFilter = yearFilter;
-
+            ViewBag.SortOrder = sortOrder;
+            ViewBag.CurrentPage = page;
+            ViewBag.TotalPages = totalPages;
             return View(carList);
         }
 
