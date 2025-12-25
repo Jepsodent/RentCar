@@ -32,8 +32,7 @@ namespace RentCar.Controllers
                 {
                     ViewBag.ErrorMessage = "Tanggal pengembalian tidak boleh kurang dari tanggal pengambilan!";
 
-                    var allCars = await _context.MsCars.Include(c => c.CarImages).ToListAsync();
-                    return View(allCars);
+                    return View(new List<MsCar>());
                 }
             }
 

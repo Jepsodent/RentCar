@@ -1,0 +1,212 @@
+﻿@model RentCar.Models.MsCar
+
+@{
+    ViewData["Title"] = "Detail Mobil - " + Model.Name;
+
+    var defaultPickup = ViewBag.PickupDate != null
+        ? ((DateTime)ViewBag.PickupDate).ToString("yyyy-MM-dd")
+        : DateTime.Now.ToString("yyyy-MM-dd");
+
+    var defaultReturn = ViewBag.ReturnDate != null
+        ? ((DateTime)ViewBag.ReturnDate).ToString("yyyy-MM-dd")
+        : DateTime.Now.AddDays(1).ToString("yyyy-MM-dd");
+}
+
+<style>
+    .detail-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 40px;
+        margin-top: 30px;
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    /* Kolom Kiri: Gambar */
+    .left-column {
+        flex: 1;
+        min-width: 300px;
+    }
+
+    .main-image {
+        width: 100%;
+        border-radius: 10px;
+        object-fit: cover;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    /* Kolom Kanan: Detail & Form */
+    .right-column {
+        flex: 1;
+        min-width: 300px;
+    }
+
+    .car-title {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 10px;
+    }
+
+    .car-specs {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 20px;
+        color: #666;
+        font-size: 0.95rem;
+    }
+
+    .spec-badge {
+        background: #f0f4f8;
+        padding: 5px 10px;
+        border-radius: 5px;
+        border: 1px solid #dceefc;
+    }
+
+    .price-tag {
+        font-size: 1.5rem;
+        color: #6a1b9a; 
+        font-weight: bold;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #eee;
+    }
+
+    /* Form Styling */
+    .booking-form {
+        background: #f9f9f9;
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid #eee;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #444;
+        }
+
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+        box-sizing: border-box;
+    }
+
+    .btn-confirm {
+        width: 100%;
+        padding: 12px;
+        background-color: #6a1b9a;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        margin-top: 10px;
+        transition: background 0.3s;
+    }
+
+        .btn-confirm:hover {
+            background-color: #4a148c;
+        }
+
+    .total-price-preview {
+        margin-top: 15px;
+        font-weight: bold;
+        text-align: right;
+        font-size: 1.2rem;
+        color: #333;
+    }
+</style>
+
+<div class="detail-container">
+    <div class="left-column">
+        @{
+            var imageLink = Model.CarImages.FirstOrDefault()?.ImageLink ?? "https://placehold.co/600x400?text=No+Image";
+        }
+        <img src="@imageLink" alt="@Model.Name" class="main-image" />
+    </div>
+
+    <div class="right-column">
+        <h1 class="car-title">@Model.Name</h1>
+
+        <div class="car-specs">
+            <span class="spec-badge"><i class="fas fa-calendar"></i> @Model.Year</span>
+            <span class="spec-badge"><i class="fas fa-chair"></i> @Model.NumberOfCarSeats Seat</span>
+            <span class="spec-badge"><i class="fas fa-cogs"></i> @Model.Transmission</span>
+        </div>
+
+        <div class="price-tag">
+            Rp. @Model.PricePerDay.ToString("N0") <span style="font-size:0.9rem; color:#666; font-weight:normal;">/ hari</span>
+        </div>
+
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div style="color:red; margin-bottom:15px; padding:10px; background:#ffe6e6; border-radius:5px;">
+                @TempData["ErrorMessage"]
+            </div>
+        }
+
+        <div class="booking-form">
+            <h3 style="margin-top:0;">Formulir Penyewaan</h3>
+
+            <form asp-controller="Rental" asp-action="Book" method="post" id="bookingForm">
+                <input type="hidden" name="carId" value="@Model.CarId" />
+
+                <div class="form-group">
+                    <label>Tanggal Ambil (Pickup)</label>
+                    <input type="date" id="pickupDate" name="pickupDate" class="form-control" value="@defaultPickup" required />
+                </div>
+
+                <div class="form-group">
+                    <label>Tanggal Kembali (Return)</label>
+                    <input type="date" id="returnDate" name="returnDate" class="form-control" value="@defaultReturn" required />
+                </div>
+
+                <div class="total-price-preview">
+                    Total: <span id="totalPriceDisplay">Rp. 0</span>
+                </div>
+
+                <button type="submit" class="btn-confirm">
+                    <i class="fas fa-check-circle"></i> Konfirmasi Sewa
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        const pricePerDay = @Model.PricePerDay.ToString(System.Globalization.CultureInfo.InvariantCulture);        const pickupInput = document.getElementById('pickupDate');
+        const returnInput = document.getElementById('returnDate');
+        const totalDisplay = document.getElementById('totalPriceDisplay');
+
+        function calculateTotal() {
+            const start = new Date(pickupInput.value);
+            const end = new Date(returnInput.value);
+
+            const diffTime = end - start;
+            let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays < 1) diffDays = 1; 
+
+            const total = diffDays * pricePerDay;
+
+            totalDisplay.innerText = "Rp. " + total.toLocaleString('id-ID');
+        }
+
+        pickupInput.addEventListener('change', calculateTotal);
+        returnInput.addEventListener('change', calculateTotal);
+
+        calculateTotal();
+    </script>
+}

@@ -154,7 +154,6 @@
         padding: 50px;
         color: #777;
     }
-    /* TAMBAHAN: Style Pagination */
     .pagination-container {
         margin-top: 40px;
         display: flex;
@@ -177,7 +176,7 @@
         }
 
         .btn-page.active {
-            background-color: #6a1b9a; /* Warna tema ungu */
+            background-color: #6a1b9a; 
             color: white;
             border-color: #6a1b9a;
         }
@@ -277,7 +276,12 @@
                         Harga: Rp. @car.PricePerDay.ToString("N0") / hari
                     </div>
 
-                    <a asp-controller="Rental" asp-action="Book" asp-route-id="@car.CarId" class="btn-rent">
+                    <a asp-controller="Car" 
+                    asp-action="Detail" 
+                    asp-route-id="@car.CarId" 
+                    asp-route-pickupDate="@ViewBag.PickupDate?.ToString("yyyy-MM-dd")"
+                    asp-route-returnDate="@ViewBag.ReturnDate?.ToString("yyyy-MM-dd")" 
+                    class="btn-rent">
                         Sewa Sekarang
                     </a>
                 </div>
@@ -291,6 +295,7 @@
             <p>Silakan coba tanggal lain atau filter tahun yang berbeda.</p>
         </div>
     }
+</div>
     @if (ViewBag.TotalPages >= 0)
     {
         <div class="pagination-container">
@@ -298,7 +303,6 @@
                 var prevDisabled = ViewBag.CurrentPage == 1 ? "disabled" : "";
                 var nextDisabled = ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "";
 
-                // Kita harus mengoper parameter filter lain (tanggal/tahun) supaya pas klik next, filternya gak hilang
                 var routeParams = new Dictionary<string, string>
                 {
                 { "pickupDate", ViewBag.PickupDate?.ToString("yyyy-MM-dd") },
@@ -334,4 +338,3 @@
             </a>
         </div>
     }
-</div>
