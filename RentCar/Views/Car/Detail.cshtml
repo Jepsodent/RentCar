@@ -161,6 +161,7 @@
             <h3 style="margin-top:0;">Formulir Penyewaan</h3>
 
             <form asp-controller="Rental" asp-action="Book" method="post" id="bookingForm">
+                @Html.AntiForgeryToken()
                 <input type="hidden" name="carId" value="@Model.CarId" />
 
                 <div class="form-group">
