@@ -128,10 +128,11 @@
 
                 @if (User.Identity!.IsAuthenticated)
                 {
+                    <li><a class="nav-link" asp-controller="Car" asp-action="Index">Sewa Mobil</a></li>
                     <li><a class="nav-link" asp-controller="Rental" asp-action="History">Riwayat Penyewaan</a></li>
                 }
 
-                <li><a class="nav-link" asp-controller="Home" asp-action="Privacy">Kontak Kami</a></li>
+                <li><a class="nav-link" asp-controller="Home" asp-action="AboutUs">Kontak Kami</a></li>
             </ul>
 
             <ul class="nav-menu">

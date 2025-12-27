@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RentCar.Data;
+using RentCar.Filters;
 using RentCar.Models;
 using RentCar.ViewModel.Auth;
 using System.Security.Claims;
@@ -15,13 +16,16 @@ namespace RentCar.Controllers
         {
             _context = dbContext;
         }
+        [RedirectIfAuthenticate]
 
         [HttpGet]
         public IActionResult Register()
         {
+           
             return View();
         }
 
+        [RedirectIfAuthenticate]
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel customer)
         {
@@ -51,15 +55,19 @@ namespace RentCar.Controllers
             return View(customer);
         }
 
+        [RedirectIfAuthenticate]
         [HttpGet]
         public IActionResult Login()
         {
+            
             return View();
         }
 
+        [RedirectIfAuthenticate]
         [HttpPost]
         public async Task<IActionResult> Login(string email, string password)
         {
+
             var user = await _context.MsCustomers
                 .FirstOrDefaultAsync(c => c.Email == email);
 
@@ -82,7 +90,7 @@ namespace RentCar.Controllers
 
                 await HttpContext.SignInAsync("Cookies", principal, authProperties);
 
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Car");
             }
             ViewBag.ErrorMessage = "Email atau Password salah!";
             return View();

@@ -1,0 +1,98 @@
+﻿@{
+    ViewData["Title"] = "Hubungi Kami";
+}
+
+<style>
+    .contact-container {
+        max-width: 800px;
+        margin: 50px auto;
+        background: white;
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 40px;
+    }
+    .text-p{
+        color: #6a1b9a;
+        font-size: 18px;
+        font-family: Arial, sans-serif;
+    }
+
+    .contact-info {
+        flex: 1;
+        min-width: 300px;
+    }
+
+    .contact-form {
+        flex: 1;
+        min-width: 300px;
+    }
+
+    .info-item {
+        margin-bottom: 20px;
+    }
+
+        .info-item h4 {
+            margin-bottom: 5px;
+            color: #6a1b9a;
+        }
+
+    input, textarea {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .btn-send {
+        background: #6a1b9a;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+</style>
+
+<div class="text-center">
+    <h1>Hubungi Kami</h1>
+    <p class="text-p">Punya pertanyaan? Tim kami siap membantu anda.</p>
+</div>
+
+<div class="contact-container">
+    <div class="contact-info">
+        <h3>Kantor Pusat</h3>
+        <div class="info-item">
+            <h4><i class="fas fa-map-marker-alt"></i> Alamat</h4>
+            <p>Jl. Jendral Sudirman No. 123<br>Jakarta Pusat, Indonesia</p>
+        </div>
+        <div class="info-item">
+            <h4><i class="fas fa-phone"></i> Telepon</h4>
+            <p>+62 21 555 5555 </p>
+        </div>
+        <div class="info-item">
+            <h4><i class="fas fa-envelope"></i> Email</h4>
+            <p>support@rentcar.com</p>
+        </div>
+    </div>
+
+    <div class="contact-form">
+        <h3>Kirim Pesan</h3>
+        <form>
+            <label>Nama Anda</label>
+            <input type="text" placeholder="Nama Lengkap">
+
+            <label>Email</label>
+            <input type="email" placeholder="email@contoh.com">
+
+            <label>Pesan</label>
+            <textarea rows="4" placeholder="Tulis pesan anda disini..."></textarea>
+
+            <button type="button" class="btn-send" onclick="alert('Pesan terkirim! (Simulasi)')">Kirim Pesan</button>
+        </form>
+    </div>
+</div>
